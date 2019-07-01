@@ -46,6 +46,7 @@ _.each = bloop(_.idtt, _.noop);
 _.values = (list) => _.map(list, _.identity);
 
 _.toArray = (list) => Array.isArray(list) ? list : _.values(list);
+_.toArray2 = _.if(Array.isArray, _.idtt, _.values);
 _.rest = (list, num) => _.toArray(list).slice(num || 1);
 _.reverse = (list) => _.toArray(list).reverse();
 _.rester = (func, num) => (...args) => func.apply(null, _.rest(args, num));
