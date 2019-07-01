@@ -31,7 +31,15 @@ _.isObject = (obj) => {
 };
 _.keys = (obj) => _.isObject(obj) ? Object.keys(obj) : [];
 _.map = bloop(_.array, _.push_to);
+_.filter = (data, predicate) => {
+  const res = [];
+  _.each(data, (value, idx, data) => {
+    if (predicate(value)) res.push(value);
+  });
+  return res;
+};
 _.each = bloop(_.idtt, _.noop);
 _.values = (list) => _.map(list, _.identity);
 
 
+console.log(_.filter({ a: 1, b: 2}, v => v < 2))
