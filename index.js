@@ -45,6 +45,12 @@ _.filter = bloop(_.array, (bool, res, val) => {
 _.each = bloop(_.idtt, _.noop);
 _.values = (list) => _.map(list, _.identity);
 
+_.toArray = (list) => Array.isArray(list) ? list : _.values(list);
+_.rest = (list, num) => _.toArray(list).slice(num || 1);
+_.reverse = (list) => _.toArray(list).reverse();
+_.rester = (func, num) => (...args) => func.apply(null, _.rest(args, num));
+function sum(a,b) {
+  return a + b
+}
 
-console.log(_.filter({ a: 1, b: 2 }, v => v < 2))
-console.log(_.filter([1,2,3], v => v < 2))
+console.log(_.rester(sum)(1,2,3,4))
