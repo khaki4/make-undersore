@@ -6,15 +6,15 @@ const isArrayLike = list => {
   const length = getLength(list);
   return typeof length == "number" && length >= 0 && length <= MAX_ARRAY_INDEX;
 };
-const bloop = (new_data, body) => (data, iteratee) => {
+const bloop = (new_data, body) => (data, iter_predi) => {
   const result = new_data(data);
   if (isArrayLike(data)) {
     for (let i = 0, len = data.length; i < len; i++) {
-      body(iteratee(data[i], i, data), result);
+      body(iter_predi(data[i], i, data), result, data[i]);
     }
   } else {
     for (let i = 0, keys = _.keys(data), len = keys.length; i < len; i++) {
-      body(iteratee(data[keys[i]], keys[i], data), result);
+      body(iter_predi(data[keys[i]], keys[i], data), result, data[keys[i]]);
     }
   }
   return result;
@@ -24,7 +24,8 @@ _.identity = v => v;
 _.idtt = _.identity;
 _.array = () => [];
 _.push_to = (val, obj) => (obj.push(val), val);
-_.noop = () => {};
+_.noop = () => {
+};
 _.isObject = (obj) => {
   const type = typeof obj;
   return type === 'function' || type === 'object' && obj;
@@ -38,8 +39,12 @@ _.filter = (data, predicate) => {
   });
   return res;
 };
+_.filter = bloop(_.array, (bool, res, val) => {
+  if (bool) res.push(val);
+});
 _.each = bloop(_.idtt, _.noop);
 _.values = (list) => _.map(list, _.identity);
 
 
-console.log(_.filter({ a: 1, b: 2}, v => v < 2))
+console.log(_.filter({ a: 1, b: 2 }, v => v < 2))
+console.log(_.filter([1,2,3], v => v < 2))
