@@ -49,8 +49,14 @@ _.toArray = (list) => Array.isArray(list) ? list : _.values(list);
 _.rest = (list, num) => _.toArray(list).slice(num || 1);
 _.reverse = (list) => _.toArray(list).reverse();
 _.rester = (func, num) => (...args) => func.apply(null, _.rest(args, num));
-function sum(a,b) {
-  return a + b
-}
+_.if = (validator, func, alter) => (...args) => validator.apply(null, args) ? func(...args) : alter && alter(...args);
 
-console.log(_.rester(sum)(1,2,3,4))
+const sub = (a, b) => a - b;
+const sb2 = _.if(
+  (a, b) => a >= b,
+  sub,
+  () => new Error('lll')
+)
+
+console.log(sb2(12, 5))
+
