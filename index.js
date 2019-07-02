@@ -21,12 +21,14 @@ const bloop = (new_data, body) => (data, iter_predi) => {
 };
 
 _.identity = v => v;
+_.not = v => !v;
 _.idtt = _.identity;
 _.array = () => [];
 _.push_to = (val, obj) => (obj.push(val), val);
 _.push = (obj, val) => (obj.push(val), obj);
 _.noop = () => {
 };
+_.negate = (func) => (...args) => !func(...args);
 _.isObject = (obj) => {
   const type = typeof obj;
   return type === 'function' || type === 'object' && obj;
@@ -56,4 +58,9 @@ _.safety = _.with_validator = _.if;
 _.constant = (v) => () => v;
 _.isNumber = (a) => toString.call(a) === '[object Number]';
 _.filter = bloop(_.array, _.if(_.idtt, _.rester(_.push)));
-console.log(_.map([12,22,0], v => v))
+// 1
+// _.reject = bloop(_.array, _.if(_.idtt, _.noop, _.rester(_.push)));
+
+// 2
+// _.reject = bloop(_.array, _.if(_.negate(_.idtt), _.rester(_.push)));
+_.reject = bloop(_.array, _.if(_.not, _.rester(_.push)));
