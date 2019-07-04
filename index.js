@@ -6,15 +6,20 @@ const isArrayLike = list => {
   const length = getLength(list);
   return typeof length == "number" && length >= 0 && length <= MAX_ARRAY_INDEX;
 };
-const bloop = (new_data, body) => (data, iter_predi) => {
+const bloop = (new_data, body, stopper) => (data, iter_predi) => {
   const result = new_data(data);
+  let memo;
   if (isArrayLike(data)) {
     for (let i = 0, len = data.length; i < len; i++) {
-      body(iter_predi(data[i], i, data), result, data[i]);
+      memo = iter_predi(data[i], i, data);
+      if (!stopper) body(memo, result, data[i]);
+      else if (stopper(memo)) return body(memo, result, data[i]);
     }
   } else {
     for (let i = 0, keys = _.keys(data), len = keys.length; i < len; i++) {
-      body(iter_predi(data[keys[i]], keys[i], data), result, data[keys[i]]);
+      memo = iter_predi(data[keys[i]], keys[i], data);
+      if (!stopper) body(memo, result, data[keys[i]]);
+      else if (stopper(memo)) return body(memo, result, data[keys[i]]);
     }
   }
   return result;
@@ -35,16 +40,6 @@ _.isObject = (obj) => {
 };
 _.keys = (obj) => _.isObject(obj) ? Object.keys(obj) : [];
 _.map = bloop(_.array, _.push_to);
-// _.filter = (data, predicate) => {
-//   const res = [];
-//   _.each(data, (value, idx, data) => {
-//     if (predicate(value)) res.push(value);
-//   });
-//   return res;
-// };
-// _.filter = bloop(_.array, (bool, res, val) => {
-//   if (bool) res.push(val);
-// });
 _.each = bloop(_.idtt, _.noop);
 _.values = (list) => _.map(list, _.identity);
 _.rest = (list, num) => _.toArray(list).slice(num || 1);
@@ -58,9 +53,10 @@ _.safety = _.with_validator = _.if;
 _.constant = (v) => () => v;
 _.isNumber = (a) => toString.call(a) === '[object Number]';
 _.filter = bloop(_.array, _.if(_.idtt, _.rester(_.push)));
-// 1
-// _.reject = bloop(_.array, _.if(_.idtt, _.noop, _.rester(_.push)));
-
-// 2
-// _.reject = bloop(_.array, _.if(_.negate(_.idtt), _.rester(_.push)));
 _.reject = bloop(_.array, _.if(_.not, _.rester(_.push)));
+_.find = bloop(_.noop, _.rester(_.idtt, 2), _.idtt);
+
+const user = [{age: 25}, {age: 55}, {age: 57}]
+console.log(_.find(user, (v) => {
+  return v.age > 25;
+}))

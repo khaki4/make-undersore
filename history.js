@@ -31,3 +31,14 @@
 //   }
 //   return data;
 // };
+
+// _.filter = (data, predicate) => {
+//   const res = [];
+//   _.each(data, (value, idx, data) => {
+//     if (predicate(value)) res.push(value);
+//   });
+//   return res;
+// };
+// _.filter = bloop(_.array, (bool, res, val) => {
+//   if (bool) res.push(val);
+// });
