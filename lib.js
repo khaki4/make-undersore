@@ -7,24 +7,32 @@ const isArrayLike = list => {
   return typeof length == "number" && length >= 0 && length <= MAX_ARRAY_INDEX;
 };
 
-const bloop = (new_data, body, stopper) => (data, iter_predi) => {
+const bloop = (new_data, body, stopper, is_reduce) => (
+  data,
+  iter_predi,
+  opt1
+) => {
   iter_predi = iter_predi || _.idtt;
   const result = new_data(data);
-  let memo;
+  let memo = is_reduce ? opt1 : undefined;
   if (isArrayLike(data)) {
     for (let i = 0, len = data.length; i < len; i++) {
-      memo = iter_predi(data[i], i, data);
+      memo = is_reduce
+        ? iter_predi(memo, data[i], i, data)
+        : iter_predi(data[i], i, data);
       if (!stopper) body(memo, result, data[i], i);
       else if (stopper(memo)) return body(memo, result, data[i], i);
     }
   } else {
     for (let i = 0, keys = _.keys(data), len = keys.length; i < len; i++) {
-      memo = iter_predi(data[keys[i]], keys[i], data);
+      memo = is_reduce
+        ? iter_predi(memo, data[keys[i]], keys[i], data)
+        : iter_predi(data[keys[i]], keys[i], data);
       if (!stopper) body(memo, result, data[keys[i]], keys[i]);
       else if (stopper(memo)) return body(memo, result, data[keys[i]], keys[i]);
     }
   }
-  return result;
+  return is_reduce ? memo : result;
 };
 
 _.identity = v => v;
@@ -60,6 +68,8 @@ _.reject = bloop(_.array, _.if(_.not, _.rester(_.push)));
 _.find = bloop(_.noop, _.rester(_.idtt, 2), _.idtt);
 _.findIdx = bloop(_.constant(-1), _.rester(_.idtt, 3), _.idtt);
 _.findKey = bloop(_.noop, _.rester(_.idtt, 3), _.idtt);
+_.some = bloop(_.constant(false), _.constant(true), _.idtt);
+_.every = bloop(_.constant(true), _.constant(false), _.not);
 
 module.exports = {
   _,

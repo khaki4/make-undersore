@@ -1,4 +1,5 @@
 const { _, bloop } = require("./lib.js");
 
-_.some = bloop(_.constant(false), _.constant(true), _.idtt);
-_.every = bloop(_.constant(true), _.constant(false), _.not);
+_.reduce = bloop(_.noop, _.noop, undefined, true);
+
+console.log(_.reduce([1, 2, 3], (memo, val) => memo + val, 0));
