@@ -8,6 +8,7 @@ const isArrayLike = list => {
 };
 
 const bloop = (new_data, body, stopper) => (data, iter_predi) => {
+  iter_predi = iter_predi || _.idtt;
   const result = new_data(data);
   let memo;
   if (isArrayLike(data)) {
@@ -55,6 +56,10 @@ _.constant = v => () => v;
 _.isNumber = a => toString.call(a) === "[object Number]";
 _.filter = bloop(_.array, _.if(_.idtt, _.rester(_.push)));
 _.reject = bloop(_.array, _.if(_.not, _.rester(_.push)));
+
+_.find = bloop(_.noop, _.rester(_.idtt, 2), _.idtt);
+_.findIdx = bloop(_.constant(-1), _.rester(_.idtt, 3), _.idtt);
+_.findKey = bloop(_.noop, _.rester(_.idtt, 3), _.idtt);
 
 module.exports = {
   _,
